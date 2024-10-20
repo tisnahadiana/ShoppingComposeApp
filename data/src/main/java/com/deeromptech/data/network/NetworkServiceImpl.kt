@@ -18,7 +18,9 @@ import io.ktor.util.InternalAPI
 import io.ktor.utils.io.errors.IOException
 
 class NetworkServiceImpl(val client: HttpClient) : NetworkService {
+
     private val baseUrl = "https://fakestoreapi.com"
+
     override suspend fun getProducts(category: String?): ResultWrapper<List<Product>> {
         val url =
             if (category != null) "$baseUrl/products/category/$category" else "$baseUrl/products"
@@ -29,6 +31,14 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
             mapper = { dataModels: List<DataProductModel> ->
                 dataModels.map { it.toProduct() }
             }
+        )
+    }
+
+    override suspend fun getCategories(): ResultWrapper<List<String>> {
+        val url = "$baseUrl/products/categories"
+        return makeWebRequest<List<String>, List<String>>(
+            url = url,
+            method = HttpMethod.Get,
         )
     }
 

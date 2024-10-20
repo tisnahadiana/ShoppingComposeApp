@@ -2,6 +2,7 @@ package com.deeromptech.shoppingcompose.ui.feature.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +54,23 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
 
     val uiState = viewModel.uiState.collectAsState()
 
+    var loading by remember {
+        mutableStateOf(false)
+    }
+    var error by remember {
+        mutableStateOf<String?>(null)
+    }
+    var feature by remember {
+        mutableStateOf<List<Product>>(emptyList())
+
+    }
+    var popular by remember {
+        mutableStateOf<List<Product>>(emptyList())
+    }
+    var categories by remember {
+        mutableStateOf<List<String>>(emptyList())
+    }
+
     Scaffold {
         Surface(
             modifier = Modifier
@@ -57,18 +79,32 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
         ) {
             when (uiState.value) {
                 is HomeScreenUIEvents.Loading -> {
-                    CircularProgressIndicator()
+                    loading = true
+                    error = null
                 }
 
                 is HomeScreenUIEvents.Success -> {
                     val data = (uiState.value as HomeScreenUIEvents.Success)
-                    HomeContent(featured = data.featured, popularProducts = data.popularProducts)
+                    feature = data.featured
+                    popular = data.popularProducts
+                    categories = data.categories
+                    loading = false
+                    error = null
                 }
 
                 is HomeScreenUIEvents.Error -> {
-                    Text(text = (uiState.value as HomeScreenUIEvents.Error).message)
+                    val errorMsg = (uiState.value as HomeScreenUIEvents.Error).message
+                    loading = false
+                    error = errorMsg
                 }
             }
+            HomeContent(
+                feature,
+                popular,
+                categories,
+                loading,
+                error
+            )
         }
     }
 }
@@ -166,7 +202,7 @@ fun ProductItemPreview() {
 }
 
 @Composable
-fun HomeProductRow(product: List<Product>, title: String) {
+fun HomeProductRow(products: List<Product>, title: String) {
     Column {
         Box(
             modifier = Modifier
@@ -176,29 +212,34 @@ fun HomeProductRow(product: List<Product>, title: String) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier.align(
+                    Alignment.CenterStart
+                ),
+                fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "See All",
+                text = "View all",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(
+                    Alignment.CenterEnd
+                )
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.size(8.dp))
         LazyRow {
-            items(product) { product ->
+            items(products) { product ->
                 ProductItem(product = product)
             }
         }
     }
 }
 
+
 @Preview(showBackground = true, device = "id:pixel_5")
 @Composable
 fun HomeProductRowPreview() {
-    HomeProductRow(product = emptyList(), title = "Featured")
+    HomeProductRow(products = emptyList(), title = "Featured")
 }
 
 @Composable
@@ -234,7 +275,13 @@ fun SearchBarPreview() {
 }
 
 @Composable
-fun HomeContent(featured: List<Product>, popularProducts: List<Product>) {
+fun HomeContent(
+    featured: List<Product>,
+    popularProducts: List<Product>,
+    categories: List<String>,
+    isLoading: Boolean = false,
+    errorMsg: String? = null
+) {
     LazyColumn {
         item {
             ProfileHeader()
@@ -243,12 +290,44 @@ fun HomeContent(featured: List<Product>, popularProducts: List<Product>) {
             Spacer(modifier = Modifier.size(16.dp))
         }
         item {
+            if (isLoading) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(50.dp))
+                    Text(text = "Loading...", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+            errorMsg?.let {
+                Text(text = it, style = MaterialTheme.typography.bodyMedium)
+            }
+            if (categories.isNotEmpty()) {
+                LazyRow {
+                    items(categories) { category ->
+                        Text(
+                            text = category.replaceFirstChar { it.uppercase() },
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(8.dp)
+                        )
+                    }
+
+                }
+                Spacer(modifier = Modifier.size(16.dp))
+            }
             if (featured.isNotEmpty()) {
-                HomeProductRow(product = featured, title = "Featured")
+                HomeProductRow(products = featured, title = "Featured")
                 Spacer(modifier = Modifier.size(16.dp))
             }
             if (popularProducts.isNotEmpty()) {
-                HomeProductRow(product = popularProducts, title = "Popular Products")
+                HomeProductRow(products = popularProducts, title = "Popular Products")
             }
         }
     }
