@@ -17,6 +17,9 @@ ktor = "2.3.2"
 navigationCompose = "2.7.7"
 #Coil
 coilCompose = "2.7.0"
+#Compose-Animation
+animation = "1.7.0"
+serialization = "1.6.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +56,11 @@ compose-navigation = {module="androidx.navigation:navigation-compose",version.re
 
 #Coil-Compose
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+
+#Compose-Animation
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
+
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
