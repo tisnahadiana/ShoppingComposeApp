@@ -15,6 +15,8 @@ koin = "4.0.0-RC1"
 #ktor
 ktor = "2.3.2"
 navigationCompose = "2.7.7"
+#Coil
+coilCompose = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +50,9 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 
 #navigation
 compose-navigation = {module="androidx.navigation:navigation-compose",version.ref = "navigationCompose"}
+
+#Coil-Compose
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
