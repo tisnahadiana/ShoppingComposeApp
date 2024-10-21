@@ -36,6 +36,7 @@ import androidx.navigation.toRoute
 import com.deeromptech.domain.model.Product
 import com.deeromptech.shoppingcompose.model.UiProductModel
 import com.deeromptech.shoppingcompose.navigation.CartScreen
+import com.deeromptech.shoppingcompose.navigation.CartSummaryScreen
 import com.deeromptech.shoppingcompose.navigation.HomeScreen
 import com.deeromptech.shoppingcompose.navigation.ProductDetails
 import com.deeromptech.shoppingcompose.navigation.ProfileScreen
@@ -43,6 +44,7 @@ import com.deeromptech.shoppingcompose.navigation.productNavType
 import com.deeromptech.shoppingcompose.ui.feature.cart.CartScreen
 import com.deeromptech.shoppingcompose.ui.feature.home.HomeScreen
 import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetailsScreen
+import com.deeromptech.shoppingcompose.ui.feature.summary.CartSummaryScreen
 import com.deeromptech.shoppingcompose.ui.theme.ShoppingComposeTheme
 import kotlin.reflect.typeOf
 
@@ -85,7 +87,10 @@ class MainActivity : ComponentActivity() {
                                     Text(text = "Profile")
                                 }
                             }
-
+                            composable<CartSummaryScreen> {
+                                shouldShowBottomNav.value = false
+                                CartSummaryScreen(navController = navController)
+                            }
                             composable<ProductDetails>(
                                 typeMap = mapOf(typeOf<UiProductModel>() to productNavType)
                             ) {

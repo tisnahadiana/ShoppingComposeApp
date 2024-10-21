@@ -1,6 +1,8 @@
 package com.deeromptech.domain.network
 
+import com.deeromptech.domain.model.CartItemModel
 import com.deeromptech.domain.model.CartModel
+import com.deeromptech.domain.model.CartSummary
 import com.deeromptech.domain.model.CategoriesListModel
 import com.deeromptech.domain.model.ProductListModel
 import com.deeromptech.domain.model.request.AddCartRequestModel
@@ -14,6 +16,9 @@ interface NetworkService {
     ): ResultWrapper<CartModel>
 
     suspend fun getCart(): ResultWrapper<CartModel>
+    suspend fun updateQuantity(cartItemModel: CartItemModel): ResultWrapper<CartModel>
+    suspend fun deleteItem(cartItemId: Int, userId: Int): ResultWrapper<CartModel>
+    suspend fun getCartSummary(userId: Int): ResultWrapper<CartSummary>
 }
 
 sealed class ResultWrapper<out T> {
