@@ -5,14 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,73 +34,69 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.deeromptech.domain.model.Product
-import com.deeromptech.shoppingcompose.navigation.NavRoutes.CartScreen
-import com.deeromptech.shoppingcompose.navigation.NavRoutes.HomeScreen
-import com.deeromptech.shoppingcompose.navigation.ProductDetailNavType
-import com.deeromptech.shoppingcompose.navigation.NavRoutes.ProductDetails
-import com.deeromptech.shoppingcompose.navigation.NavRoutes.ProfileScreen
-//import com.deeromptech.shoppingcompose.ui.feature.cart.CartScreen
+import com.deeromptech.shoppingcompose.model.UiProductModel
+import com.deeromptech.shoppingcompose.navigation.CartScreen
+import com.deeromptech.shoppingcompose.navigation.HomeScreen
+import com.deeromptech.shoppingcompose.navigation.ProductDetails
+import com.deeromptech.shoppingcompose.navigation.ProfileScreen
+import com.deeromptech.shoppingcompose.navigation.productNavType
 import com.deeromptech.shoppingcompose.ui.feature.home.HomeScreen
+import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetailsScreen
 import com.deeromptech.shoppingcompose.ui.theme.ShoppingComposeTheme
-//import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetailsScreen
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ShoppingComposeTheme {
-                val showBottomNav = remember {
-                    mutableStateOf(false)
+                val shouldShowBottomNav = remember {
+                    mutableStateOf(true)
                 }
                 val navController = rememberNavController()
-                SharedTransitionLayout {
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        bottomBar = {
-                            AnimatedVisibility(visible = showBottomNav.value) {
-                                BottomNavigationBar(navController)
-                            }
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        AnimatedVisibility(visible = shouldShowBottomNav.value, enter = fadeIn()) {
+                            BottomNavigationBar(navController)
                         }
+
+                    }
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it)
                     ) {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it)
-                        ) {
-                            NavHost(navController = navController, startDestination = HomeScreen) {
-                                composable<HomeScreen> {
-                                    HomeScreen(navController, this)
-                                    showBottomNav.value = true
+                        NavHost(navController = navController, startDestination = HomeScreen) {
+                            composable<HomeScreen> {
+                                HomeScreen(navController)
+                                shouldShowBottomNav.value = true
+                            }
+                            composable<CartScreen> {
+                                shouldShowBottomNav.value = true
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    Text(text = "Cart")
                                 }
-                                composable<CartScreen> {
-//                                    showBottomNav.value = true
-//                                    CartScreen(navController)
+                            }
+                            composable<ProfileScreen> {
+                                shouldShowBottomNav.value = true
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    Text(text = "Profile")
                                 }
-                                composable<ProfileScreen> {
-                                    showBottomNav.value = true
-                                    Box(modifier = Modifier.fillMaxSize()) {
-                                        Text(text = "Profile")
-                                    }
-                                }
-//                                composable<ProductDetails>(
-//                                    typeMap = mapOf(typeOf<Product>() to ProductDetailNavType),
-//                                ) {
-//                                    showBottomNav.value = false
-//                                    val arg = it.toRoute<ProductDetails>()
-//                                    ProductDetailsScreen(
-//                                        navController = navController,
-//                                        product = arg.product,
-//                                        animatedVisibilityScope = this
-//                                    )
-//                                }
+                            }
+
+                            composable<ProductDetails>(
+                                typeMap = mapOf(typeOf<UiProductModel>() to productNavType)
+                            ) {
+                                shouldShowBottomNav.value = false
+                                val productRoute = it.toRoute<ProductDetails>()
+                                ProductDetailsScreen(navController, productRoute.product)
                             }
                         }
                     }
                 }
-
 
             }
         }
@@ -117,8 +115,9 @@ fun BottomNavigationBar(navController: NavController) {
         )
 
         items.forEach { item ->
+            val isSelected = currentRoute?.substringBefore("?") == item.route::class.qualifiedName
             NavigationBarItem(
-                selected = currentRoute?.substringBefore("?") == item.route::class.qualifiedName,
+                selected = isSelected,
                 onClick = {
                     navController.navigate(item.route) {
                         navController.graph.startDestinationRoute?.let { startRoute ->
@@ -135,7 +134,7 @@ fun BottomNavigationBar(navController: NavController) {
                     Image(
                         painter = painterResource(id = item.icon),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(if (currentRoute == item.route) MaterialTheme.colorScheme.primary else Color.Gray)
+                        colorFilter = ColorFilter.tint(if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray)
                     )
                 }, colors = NavigationBarItemDefaults.colors().copy(
                     selectedIconColor = MaterialTheme.colorScheme.primary,

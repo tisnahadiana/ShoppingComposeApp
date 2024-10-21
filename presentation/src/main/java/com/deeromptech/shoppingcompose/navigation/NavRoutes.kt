@@ -1,19 +1,16 @@
 package com.deeromptech.shoppingcompose.navigation
 
-import com.deeromptech.domain.model.Product
+import com.deeromptech.shoppingcompose.model.UiProductModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class NavRoutes {
-    @Serializable
-    object HomeScreen
+object HomeScreen
 
-    @Serializable
-    object CartScreen
+@Serializable
+object CartScreen
 
-    @Serializable
-    object ProfileScreen
+@Serializable
+object ProfileScreen
 
-    @Serializable
-    data class ProductDetails(val product: Product)
-}
+@Serializable
+data class ProductDetails(val product: UiProductModel)
