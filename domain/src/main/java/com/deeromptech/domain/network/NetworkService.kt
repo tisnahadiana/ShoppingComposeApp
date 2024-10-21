@@ -1,12 +1,19 @@
 package com.deeromptech.domain.network
 
+import com.deeromptech.domain.model.CartModel
 import com.deeromptech.domain.model.CategoriesListModel
-import com.deeromptech.domain.model.Product
 import com.deeromptech.domain.model.ProductListModel
+import com.deeromptech.domain.model.request.AddCartRequestModel
 
 interface NetworkService {
-    suspend fun getProducts(category:Int?): ResultWrapper<ProductListModel>
+    suspend fun getProducts(category: Int?): ResultWrapper<ProductListModel>
     suspend fun getCategories(): ResultWrapper<CategoriesListModel>
+
+    suspend fun addProductToCart(
+        request: AddCartRequestModel
+    ): ResultWrapper<CartModel>
+
+    suspend fun getCart(): ResultWrapper<CartModel>
 }
 
 sealed class ResultWrapper<out T> {

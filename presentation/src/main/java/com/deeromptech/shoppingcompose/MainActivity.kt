@@ -40,6 +40,7 @@ import com.deeromptech.shoppingcompose.navigation.HomeScreen
 import com.deeromptech.shoppingcompose.navigation.ProductDetails
 import com.deeromptech.shoppingcompose.navigation.ProfileScreen
 import com.deeromptech.shoppingcompose.navigation.productNavType
+import com.deeromptech.shoppingcompose.ui.feature.cart.CartScreen
 import com.deeromptech.shoppingcompose.ui.feature.home.HomeScreen
 import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetailsScreen
 import com.deeromptech.shoppingcompose.ui.theme.ShoppingComposeTheme
@@ -76,9 +77,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<CartScreen> {
                                 shouldShowBottomNav.value = true
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    Text(text = "Cart")
-                                }
+                                CartScreen(navController)
                             }
                             composable<ProfileScreen> {
                                 shouldShowBottomNav.value = true
