@@ -34,13 +34,17 @@ import com.deeromptech.shoppingcompose.model.UiProductModel
 import com.deeromptech.shoppingcompose.navigation.CartScreen
 import com.deeromptech.shoppingcompose.navigation.CartSummaryScreen
 import com.deeromptech.shoppingcompose.navigation.HomeScreen
+import com.deeromptech.shoppingcompose.navigation.LoginScreen
 import com.deeromptech.shoppingcompose.navigation.OrdersScreen
 import com.deeromptech.shoppingcompose.navigation.ProductDetails
 import com.deeromptech.shoppingcompose.navigation.ProfileScreen
+import com.deeromptech.shoppingcompose.navigation.RegisterScreen
 import com.deeromptech.shoppingcompose.navigation.UserAddressRoute
 import com.deeromptech.shoppingcompose.navigation.UserAddressRouteWrapper
 import com.deeromptech.shoppingcompose.navigation.productNavType
 import com.deeromptech.shoppingcompose.navigation.userAddressNavType
+import com.deeromptech.shoppingcompose.ui.feature.account.login.LoginScreen
+import com.deeromptech.shoppingcompose.ui.feature.account.register.RegisterScreen
 import com.deeromptech.shoppingcompose.ui.feature.cart.CartScreen
 import com.deeromptech.shoppingcompose.ui.feature.home.HomeScreen
 import com.deeromptech.shoppingcompose.ui.feature.orders.OrdersScreen
@@ -74,7 +78,24 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(it)
                     ) {
-                        NavHost(navController = navController, startDestination = HomeScreen) {
+
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (ShopperSession.getUser() != null) {
+                                HomeScreen
+                            } else {
+                                LoginScreen
+                            }
+                        ) {
+
+                            composable<LoginScreen> {
+                                shouldShowBottomNav.value = false
+                                LoginScreen(navController)
+                            }
+                            composable<RegisterScreen> {
+                                shouldShowBottomNav.value = false
+                                RegisterScreen(navController)
+                            }
                             composable<HomeScreen> {
                                 HomeScreen(navController)
                                 shouldShowBottomNav.value = true

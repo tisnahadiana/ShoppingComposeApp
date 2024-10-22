@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deeromptech.domain.model.request.AddCartRequestModel
 import com.deeromptech.domain.usecase.AddToCartUseCase
+import com.deeromptech.shoppingcompose.ShopperSession
 import com.deeromptech.shoppingcompose.model.UiProductModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,7 @@ class ProductDetailsViewModel(val useCase: AddToCartUseCase) : ViewModel() {
 
     private val _state = MutableStateFlow<ProductDetailsEvent>(ProductDetailsEvent.Nothing)
     val state = _state.asStateFlow()
-
+    val userDomainModel = ShopperSession.getUser()
     fun addProductToCart(product: UiProductModel) {
         viewModelScope.launch {
             _state.value = ProductDetailsEvent.Loading
@@ -23,8 +24,9 @@ class ProductDetailsViewModel(val useCase: AddToCartUseCase) : ViewModel() {
                     product.title,
                     product.price,
                     1,
-                    1
-                )
+                    userDomainModel!!.id!!
+                ),
+                userDomainModel.id!!.toLong()
             )
             when (result) {
                 is com.deeromptech.domain.network.ResultWrapper.Success -> {

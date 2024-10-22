@@ -5,6 +5,6 @@ import com.deeromptech.domain.model.OrdersListModel
 import com.deeromptech.domain.network.ResultWrapper
 
 interface OrderRepository {
-    suspend fun placeOrder(addressDomainModel: AddressDomainModel): ResultWrapper<Long>
-    suspend fun getOrderList(): ResultWrapper<OrdersListModel>
+    suspend fun placeOrder(addressDomainModel: AddressDomainModel, userId: Long): ResultWrapper<Long>
+    suspend fun getOrderList(userId: Long): ResultWrapper<OrdersListModel>
 }
