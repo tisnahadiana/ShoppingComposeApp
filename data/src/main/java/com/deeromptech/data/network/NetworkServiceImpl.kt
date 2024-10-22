@@ -3,14 +3,19 @@ package com.deeromptech.data.network
 import com.deeromptech.data.model.CategoryDataModel
 import com.deeromptech.data.model.DataProductModel
 import com.deeromptech.data.model.request.AddToCartRequest
+import com.deeromptech.data.model.request.AddressDataModel
 import com.deeromptech.data.model.response.CartResponse
 import com.deeromptech.data.model.response.CartSummaryResponse
 import com.deeromptech.data.model.response.CategoriesListResponse
+import com.deeromptech.data.model.response.OrdersListResponse
+import com.deeromptech.data.model.response.PlaceOrderResponse
 import com.deeromptech.data.model.response.ProductListResponse
+import com.deeromptech.domain.model.AddressDomainModel
 import com.deeromptech.domain.model.CartItemModel
 import com.deeromptech.domain.model.CartModel
 import com.deeromptech.domain.model.CartSummary
 import com.deeromptech.domain.model.CategoriesListModel
+import com.deeromptech.domain.model.OrdersListModel
 import com.deeromptech.domain.model.Product
 import com.deeromptech.domain.model.ProductListModel
 import com.deeromptech.domain.model.request.AddCartRequestModel
@@ -98,6 +103,26 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
             method = HttpMethod.Get,
             mapper = { cartSummary: CartSummaryResponse ->
                 cartSummary.toCartSummary()
+            })
+    }
+
+    override suspend fun placeOrder(address: AddressDomainModel, userId: Int): ResultWrapper<Long> {
+        val dataModel = AddressDataModel.fromDomainAddress(address)
+        val url = "$baseUrl/orders/$userId"
+        return makeWebRequest(url = url,
+            method = HttpMethod.Post,
+            body = dataModel,
+            mapper = { orderRes: PlaceOrderResponse ->
+                orderRes.data.id
+            })
+    }
+
+    override suspend fun getOrderList(): ResultWrapper<OrdersListModel> {
+        val url = "$baseUrl/orders/1"
+        return makeWebRequest(url = url,
+            method = HttpMethod.Get,
+            mapper = { ordersResponse: OrdersListResponse ->
+                ordersResponse.toDomainResponse()
             })
     }
 

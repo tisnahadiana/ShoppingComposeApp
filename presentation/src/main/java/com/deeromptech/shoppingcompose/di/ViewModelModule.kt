@@ -2,6 +2,7 @@ package com.deeromptech.shoppingcompose.di
 
 import com.deeromptech.shoppingcompose.ui.feature.cart.CartViewModel
 import com.deeromptech.shoppingcompose.ui.feature.home.HomeViewModel
+import com.deeromptech.shoppingcompose.ui.feature.orders.OrdersViewModel
 import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetailsViewModel
 import com.deeromptech.shoppingcompose.ui.feature.summary.CartSummaryViewModel
 import org.koin.core.module.dsl.viewModel
@@ -15,9 +16,12 @@ val viewModelModule = module {
         ProductDetailsViewModel(get())
     }
     viewModel {
-        CartViewModel(get(),get(),get())
+        CartViewModel(get(), get(), get())
     }
     viewModel {
-        CartSummaryViewModel(get())
+        CartSummaryViewModel(get(), get())
+    }
+    viewModel {
+        OrdersViewModel(get())
     }
 }
