@@ -52,6 +52,7 @@ import com.deeromptech.shoppingcompose.ui.feature.product_details.ProductDetails
 import com.deeromptech.shoppingcompose.ui.feature.summary.CartSummaryScreen
 import com.deeromptech.shoppingcompose.ui.feature.user_address.UserAddressScreen
 import com.deeromptech.shoppingcompose.ui.theme.ShoppingComposeTheme
+import org.koin.android.ext.android.inject
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val shopperSession : ShopperSession by inject()
             ShoppingComposeTheme {
                 val shouldShowBottomNav = remember {
                     mutableStateOf(true)
@@ -81,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(
                             navController = navController,
-                            startDestination = if (ShopperSession.getUser() != null) {
+                            startDestination = if (shopperSession.getUser() != null) {
                                 HomeScreen
                             } else {
                                 LoginScreen
